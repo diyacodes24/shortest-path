@@ -1,0 +1,102 @@
+import java.util.*; //imports java utility classes(list, priorityqueue, comparator)
+
+class MapNode {
+    int x, y;
+    double distToEnd;
+    double totDist;
+    MapNode parent;
+
+    public MapNode(int x, int y, double distToEnd) //constructor initialising values of coordinates, distance to end points and total distance
+    {
+        this.x = x;
+        this.y = y;
+        this.distToEnd = distToEnd;
+        this.totDist = Double.MAX_VALUE;
+        this.parent = null;
+    }
+}
+
+public class Main {
+    private static final int[][] DIRECTIONS = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}}; //represents possible movements from a cell
+
+    public static double euclideanDistance(int x1, int y1, int x2, int y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));  //calculates the Euclidean distance between two points given their coordinates
+    }
+
+    public static List<MapNode> findPath(int[][] map, int startX, int startY, int endX, int endY) {
+        int rows = map.length;
+        int cols = map[0].length;
+
+        PriorityQueue<MapNode> openSet = new PriorityQueue<>(Comparator.comparingDouble(a -> a.totDist));
+        MapNode[][] nodes = new MapNode[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                nodes[i][j] = new MapNode(i, j, euclideanDistance(i, j, endX, endY));
+            }
+        }
+
+        MapNode startNode = nodes[startX][startY];
+        startNode.totDist = startNode.distToEnd;
+        openSet.add(startNode);
+
+        while (!openSet.isEmpty()) {
+            MapNode currentNode = openSet.poll();
+
+            if (currentNode.x == endX && currentNode.y == endY) {
+                return reconstructPath(currentNode);
+            }
+
+            for (int[] dir : DIRECTIONS) {
+                int newX = currentNode.x + dir[0];
+                int newY = currentNode.y + dir[1];
+
+                if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && map[newX][newY] != 1) {
+                    MapNode neighbor = nodes[newX][newY];
+                    double tentativeDistance = currentNode.totalDistance + euclideanDistance(currentNode.x, currentNode.y, newX, newY);
+
+                    if (tentativeDistance < neighbor.totalDistance) {
+                        neighbor.parent = currentNode;
+                        neighbor.totalDistance = tentativeDistance;
+                        if (!openSet.contains(neighbor)) {
+                            openSet.add(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>();
+    }
+
+    private static List<MapNode> reconstructPath(MapNode node) {
+        List<MapNode> path = new ArrayList<>();
+        while (node != null) {
+            path.add(node);
+            node = node.parent;
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
+    public static void main(String[] args) {
+        // Example usage
+        int[][] map = {
+            {0, 0, 0, 0, 0},
+            {0, 1, 1, 1, 0},
+            {0, 0, 0, 0, 0},
+            {0, 0, 1, 0, 0},
+            {0, 0, 0, 0, 0}
+        };
+
+        int startX = 0;
+        int startY = 0;
+        int endX = 4;
+        int endY = 4;
+
+        List<MapNode> path = findPath(map, startX, startY, endX, endY);
+        for (MapNode node : path) {
+            System.out.println("(" + node.x + ", " + node.y + ")");
+        }
+    }
+}
