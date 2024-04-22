@@ -63,12 +63,12 @@ public class Main {
                 if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && map[newX][newY] != 1) 
                {
                     MapNode neighbor = nodes[newX][newY];
-                    double tentativeDistance = currentNode.totalDistance + euclideanDistance(currentNode.x, currentNode.y, newX, newY);
+                    double tentativeDistance = currentNode.totDist + euclideanDistance(currentNode.x, currentNode.y, newX, newY);
 
-                    if (tentativeDistance < neighbor.totalDistance) 
+                    if (tentativeDistance < neighbor.totDist) 
                    {
                         neighbor.parent = currentNode;
-                        neighbor.totalDistance = tentativeDistance;
+                        neighbor.totDist = tentativeDistance;
                         if (!openSet.contains(neighbor)) 
                         {
                             openSet.add(neighbor);
