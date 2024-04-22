@@ -32,33 +32,45 @@ public class Main {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                nodes[i][j] = new MapNode(i, j, euclideanDistance(i, j, endX, endY));
+                nodes[i][j] = new MapNode(i, j, euclideanDistance(i, j, endX, endY)); 
+                //loop initializes each node in array with its coordinates and estimated distance to the end point using the Euclidean distance
             }
         }
 
-        MapNode startNode = nodes[startX][startY];
-        startNode.totDist = startNode.distToEnd;
+        MapNode startNode = nodes[startX][startY]; 
+        startNode.totDist = startNode.distToEnd; //sets the start node's totDist to its estimated distance to the end point
         openSet.add(startNode);
 
-        while (!openSet.isEmpty()) {
+       
+ while (!openSet.isEmpty()) //dequeues the node with the lowest totDist from the priority queue and checks if it's the goal node
+{
             MapNode currentNode = openSet.poll();
 
             if (currentNode.x == endX && currentNode.y == endY) {
                 return reconstructPath(currentNode);
             }
 
-            for (int[] dir : DIRECTIONS) {
+
+            /*loop below iterates through each neighbor of the current node, 
+            calculates dist. If the dist < the neighbor's current totDist,
+            updates the neighbor's totDist, adds to open set if not already present*/
+
+            for (int[] dir : DIRECTIONS)  
+          {
                 int newX = currentNode.x + dir[0];
                 int newY = currentNode.y + dir[1];
 
-                if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && map[newX][newY] != 1) {
+                if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && map[newX][newY] != 1) 
+               {
                     MapNode neighbor = nodes[newX][newY];
                     double tentativeDistance = currentNode.totalDistance + euclideanDistance(currentNode.x, currentNode.y, newX, newY);
 
-                    if (tentativeDistance < neighbor.totalDistance) {
+                    if (tentativeDistance < neighbor.totalDistance) 
+                   {
                         neighbor.parent = currentNode;
                         neighbor.totalDistance = tentativeDistance;
-                        if (!openSet.contains(neighbor)) {
+                        if (!openSet.contains(neighbor)) 
+                        {
                             openSet.add(neighbor);
                         }
                     }
@@ -79,7 +91,8 @@ public class Main {
         return path;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  //main method, defining map start&end points
+ {
         // Example usage
         int[][] map = {
             {0, 0, 0, 0, 0},
